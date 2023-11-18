@@ -28,6 +28,8 @@ window.onerror = function (message, source, lineno, colno, error) {
     return true;
 };
 
+let mediaRecorder, recorderEndTime, recorderChunks = [];
+
 function initializeCamera(video, canvas) {
     navigator.mediaDevices.getUserMedia({
         video: {
@@ -37,6 +39,21 @@ function initializeCamera(video, canvas) {
     .then(function (stream) {
         video.srcObject = stream;
         video.play();
+        
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = function (event) {
+            if (event.data.size > 0) {
+                recorderChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = () => {
+            const recordedBlob = new Blob(recorderChunks, { type: 'video/webm' });
+            const recordedUrl = URL.createObjectURL(recordedBlob);
+        
+            // Do something with the recorded video URL, e.g., display it or save it.
+            console.log(recordedUrl);
+        };
         
         const track = stream.getVideoTracks()[0];
         const settings = track.getSettings();
@@ -85,6 +102,31 @@ function computeMask(rgb, threshold) {
     return [count, [arr]];
 }
 
+const startRecording = (durationMs) => {
+    if (mediaRecorder && mediaRecorder.state != 'recording') {
+        console.log('start');
+        mediaRecorder.start();
+    };
+    recordingEndTime = Date.now() + durationMs;
+};
+    
+const stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state == 'recording') {
+        console.log('stop');
+        mediaRecorder.stop();
+        //stream.getTracks().forEach(track => track.stop());
+    };
+};
+
+const checkRecordingTime = () => {
+    const currentTime = Date.now();
+    if (currentTime >= recordingEndTime) {
+        stopRecording();
+    } else {
+        requestAnimationFrame(checkRecordingTime);
+    }
+};
+
 var previousPixels = null;
 
 window.onload = function() {
@@ -99,9 +141,7 @@ window.onload = function() {
         if (previousPixels) {
             var rgbDiff = computeDifference(previousPixels, pixels);
             var arrMask = computeMask(rgbDiff, THRESHOLD);
-            if (arrMask[0] > 0) {
-                this.emit('track', { data : arrMask[1] });
-            };
+            this.emit('track', { data : arrMask });
         }
         previousPixels = pixels;
     };
@@ -115,13 +155,16 @@ window.onload = function() {
     var tracker = new DiffTracker();
 
     tracker.on('track', function (event) {
-        if (event.data.length === 0) {
+        if (event.data.length === 0 || event.data[0] == 0) {
             // No targets were detected in this frame.
             //console.log('No detection');
         } else {
+            startRecording(1000);
+            checkRecordingTime();
+            
             context.clearRect(0, 0, canvas.width, canvas.height);
             
-            event.data.forEach(function (pixelMask) {
+            event.data[1].forEach(function (pixelMask) {
                 // Access the pixel data directly from the canvas context
                 const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
                 const pixelData = imageData.data;
