@@ -67,16 +67,20 @@ function computeMask(rgb, threshold) {
     for (let i = 0; i < size; i++) {
         if (rgb[i*4] > threshold) {
             count += 1;
+            arr[i] = 1;
+        } else {
+            arr[0];
         }
     }
     
-    return [count];
+    return [count, [arr]];
 }
 
 var previousPixels = null;
 
 window.onload = function() {
     var VIDEO_ID = 'video';
+    var THRESHOLD = 50;
     
     var DiffTracker = function() {
         DiffTracker.base(this, 'constructor');
@@ -85,10 +89,10 @@ window.onload = function() {
     DiffTracker.prototype.track = function(pixels, width, height) {
         if (previousPixels) {
             var rgbDiff = computeDifference(previousPixels, pixels);
-            var arrMask = computeMask(rgbDiff, 0);
-            //if (arrMask[0] > 0) {
-            this.emit('track', { data : arrMask});
-            //};
+            var arrMask = computeMask(rgbDiff, THRESHOLD);
+            if (arrMask[0] > 0) {
+                this.emit('track', { data : arrMask[1] });
+            };
         }
         previousPixels = pixels;
     };
@@ -115,11 +119,29 @@ window.onload = function() {
         } else {
             context.clearRect(0, 0, canvas.width, canvas.height);
             
-            event.data.forEach(function (rect) {
+            event.data.forEach(function (pixelMask) {
+                // Access the pixel data directly from the canvas context
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const pixelData = imageData.data;
+                
+                // Modify pixel values based on your Int32Array
+                for (let i = 0; i < pixelMask.length; i++) {
+                    const pixelValue = pixelMask[i] === 1 ? 255 : 0;
+                
+                    // Update red, green, blue, and alpha values for the pixel directly
+                    const offset = i * 4;
+                    pixelData[offset] = pixelValue;      // Red
+                    pixelData[offset + 1] = pixelValue;  // Green
+                    pixelData[offset + 2] = pixelValue;  // Blue
+                    pixelData[offset + 3] = 255;          // Alpha (opaque)
+                }
+                // Put the updated pixel data back onto the canvas
+                context.putImageData(imageData, 0, 0);
+                
                 //context.strokeStyle = '#FF0000';
                 //context.strokeRect(rect.x, rect.y, rect.width, rect.height);
                 //console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
-                console.log(rect);
+                //console.log(pixelMask);
             });
         }
     });
