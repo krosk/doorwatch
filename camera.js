@@ -28,27 +28,30 @@ window.onerror = function (message, source, lineno, colno, error) {
     return true;
 };
 
-// Accessing the back-facing camera
-var VIDEO_ID = 'video';
-navigator.mediaDevices.getUserMedia({
-    video: {
-        facingMode: { exact: 'user' } // or 'user' for front-facing camera
-    }
-})
+function initializeCamera(id) {
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            facingMode: { exact: 'environment' } // or 'user' for front-facing camera
+        }
+    })
     .then(function (stream) {
-        var video = document.getElementById(VIDEO_ID);
+        var video = document.getElementById(id);
         video.srcObject = stream;
         video.play();
     })
     .catch(function (err) {
-        console.log("Error?: " + err);
+        console.log("Error: " + err);
     });
-
-var video = document.getElementById(VIDEO_ID);
-var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
+};
 
 window.onload = function() {
+    var VIDEO_ID = 'video';
+    
+    initializeCamera(VIDEO_ID);
+    
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
     tracking.ColorTracker.registerColor('black', function(r, g, b) {
         if (r < 50 && g < 50 && b < 50) {
             return true;
@@ -63,7 +66,6 @@ window.onload = function() {
             // No targets were detected in this frame.
             //console.log('No detection');
         } else {
-            console.log('detect');
             context.clearRect(0, 0, canvas.width, canvas.height);
             
             event.data.forEach(function (rect) {
@@ -74,7 +76,7 @@ window.onload = function() {
         }
     });
 
-    tracking.track('#video', tracker, { camera: true } );
+    tracking.track(VIDEO_ID, tracker);
 
     console.log('Done');
 };
