@@ -1,10 +1,14 @@
 // log overriding
 var LOGS_ID = 'logs';
 
-console.log = function (message) {
+console.log = function () {
     var logsDiv = document.getElementById(LOGS_ID);
     var logEntry = document.createElement('div');
-    logEntry.textContent = message;
+    
+    for (var i = 0; i < arguments.length; i++) {
+        var message = arguments[i];
+        logEntry.textContent += message + ' ';
+    }
     logsDiv.appendChild(logEntry);
 
     // Optionally, scroll to the bottom to always show the latest logs
@@ -41,16 +45,15 @@ navigator.mediaDevices.getUserMedia({
     });
 
 var video = document.getElementById(VIDEO_ID);
-var canvas = document.createElement('canvas');
+var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
-document.body.appendChild(canvas);
 
 window.onload = function() {
     tracking.ColorTracker.registerColor('black', function(r, g, b) {
-        //if (r < 50 && g > 200 && b < 50) {
-        //    return true;
-        //}
-        return true;
+        if (r < 50 && g < 50 && b < 50) {
+            return true;
+        }
+        return false;
     });
     //var tracker = new tracking.Tracker('target');
     var tracker = new tracking.ColorTracker(['black']);
@@ -64,9 +67,9 @@ window.onload = function() {
             context.clearRect(0, 0, canvas.width, canvas.height);
             
             event.data.forEach(function (rect) {
-                //context.strokeStyle = '#FF0000';
-                //context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-               // console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
+                context.strokeStyle = '#FF0000';
+                context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+                console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
             });
         }
     });

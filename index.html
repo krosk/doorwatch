@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motion Detection Example</title>
     <script src="tracking.js"></script>
+    
 </head>
 <body>
-    <video id="video" width="100" height="100" autoplay style="border: 1px solid #ccc;"></video>
+    <div class="video-view" style="border: 1px solid #ccc; margin-bottom: 100px;" >
+        <video id="video" width="100" height="100" style="position: absolute;" preload autoplay muted></video>
+        <canvas id="canvas" width="100" height="100" style="position: absolute;"></canvas>
+    </div>
     <div id="logs" style="border: 1px solid #ccc; padding: 10px; max-height: 200px; overflow-y: scroll;"></div>
     <script src="camera.js"></script>
 </body>
