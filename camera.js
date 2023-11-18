@@ -44,8 +44,54 @@ function initializeCamera(id) {
     });
 };
 
+function computeDifference(rgb1, rgb2) {
+    if (rgb1.length !== rgb2.length) {
+        throw new Error("Arrays must have the same size");
+    }
+
+    const rgb = new Int32Array(rgb1.length);
+
+    for (let i = 0; i < rgb1.length; i++) {
+        rgb[i] = Math.abs(rgb1[i] - rgb2[i]);
+    }
+
+    return rgb;
+}
+
+function computeMask(rgb, threshold) {
+    const size = rgb.length / 4;
+    const arr = new Int32Array(size);
+    
+    var count = 0;
+    
+    for (let i = 0; i < size; i++) {
+        if (rgb[i*4] > threshold) {
+            count += 1;
+        }
+    }
+    
+    return [count];
+}
+
+var previousPixels = null;
+
 window.onload = function() {
     var VIDEO_ID = 'video';
+    
+    var DiffTracker = function() {
+        DiffTracker.base(this, 'constructor');
+    };
+    tracking.inherits(DiffTracker, tracking.Tracker);
+    DiffTracker.prototype.track = function(pixels, width, height) {
+        if (previousPixels) {
+            var rgbDiff = computeDifference(previousPixels, pixels);
+            var arrMask = computeMask(rgbDiff, 0);
+            //if (arrMask[0] > 0) {
+            this.emit('track', { data : arrMask});
+            //};
+        }
+        previousPixels = pixels;
+    };
     
     initializeCamera(VIDEO_ID);
     
@@ -59,7 +105,8 @@ window.onload = function() {
         return false;
     });
     //var tracker = new tracking.Tracker('target');
-    var tracker = new tracking.ColorTracker(['black']);
+    //var tracker = new tracking.ColorTracker(['black']);
+    var tracker = new DiffTracker();
 
     tracker.on('track', function (event) {
         if (event.data.length === 0) {
@@ -69,9 +116,10 @@ window.onload = function() {
             context.clearRect(0, 0, canvas.width, canvas.height);
             
             event.data.forEach(function (rect) {
-                context.strokeStyle = '#FF0000';
-                context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-                console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
+                //context.strokeStyle = '#FF0000';
+                //context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+                //console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
+                console.log(rect);
             });
         }
     });
