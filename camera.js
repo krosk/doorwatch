@@ -53,6 +53,15 @@ function initializeCamera(video, canvas) {
         
             // Do something with the recorded video URL, e.g., display it or save it.
             console.log(recordedUrl);
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = recordedUrl;
+            downloadLink.download = 'recorded-video.webm';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            
+            recorderChunks = [];
         };
         
         const track = stream.getVideoTracks()[0];
