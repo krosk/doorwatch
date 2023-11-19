@@ -175,6 +175,7 @@ window.onload = function() {
         if (event.data.length === 0 || event.data[0] == 0) {
             // No targets were detected in this frame.
             //console.log('No detection');
+            context.clearRect(0, 0, canvas.width, canvas.height);
         } else {
             startRecording(3000);
             checkRecordingTime();
