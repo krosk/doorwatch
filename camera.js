@@ -1,3 +1,27 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-storage.js";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+    
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+    apiKey: "AIzaSyCIZFIyjLAG3o1UL_oJWLn8taDcgVRMFfg",
+    authDomain: "doorwatch-9ca78.firebaseapp.com",
+    projectId: "doorwatch-9ca78",
+    storageBucket: "doorwatch-9ca78.appspot.com",
+    messagingSenderId: "454189066961",
+    appId: "1:454189066961:web:2287cafb397869c22f33f0",
+    measurementId: "G-T18YTC8JZ9"
+};
+    
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const storage = getStorage(app, "gs://doorwatch-9ca78.appspot.com");
+
 let mediaRecorder, recorderEndTime, recorderChunks = [];
 
 function initializeCamera(video, canvas) {
@@ -26,7 +50,7 @@ function initializeCamera(video, canvas) {
             console.log(recordedUrl);
             
             //downloadToDevice(recordedUrl);
-            //uploadToFirebase(recordedBlob);
+            uploadToFirebase(recordedBlob);
         };
         
         const track = stream.getVideoTracks()[0];
@@ -62,23 +86,14 @@ function downloadToDevice(recordedUrl) {
 }
 
 function uploadToFirebase(blob) {
+    console.log('Upload start');
     // Create a storage reference
-    var storageRef = storage.ref('video/' + generateFileName());
+    var storageRef = ref(storage, 'video/' + generateFileName());
     // Upload Blob
-    var uploadTask = storageRef.put(blob);
-    
-    uploadTask.on('state_changed',
-        function(snapshot){
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
-        },
-        function(error) {
-            console.error('Upload failed: ', error);
-        },
-        function() {
-            console.log('Upload successful');
-        }
-    );
+    // 'file' comes from the Blob or File API
+    uploadBytes(storageRef, blob).then((snapshot) => {
+        console.log('Uploaded a blob or file!');
+    });
 }
 
 
