@@ -1,33 +1,3 @@
-// log overriding
-var LOGS_ID = 'logs';
-
-console.log = function () {
-    var logsDiv = document.getElementById(LOGS_ID);
-    var logEntry = document.createElement('div');
-    
-    for (var i = 0; i < arguments.length; i++) {
-        var message = arguments[i];
-        logEntry.textContent += message + ' ';
-    }
-    logsDiv.appendChild(logEntry);
-
-    // Optionally, scroll to the bottom to always show the latest logs
-    logsDiv.scrollTop = logsDiv.scrollHeight;
-};
-
-window.onerror = function (message, source, lineno, colno, error) {
-    var logsDiv = document.getElementById(LOGS_ID);
-    var logEntry = document.createElement('div');
-    logEntry.textContent = 'Error: ' + message + ' at line ' + lineno + ' column ' + colno;
-    logsDiv.appendChild(logEntry);
-
-    // Optionally, scroll to the bottom to always show the latest logs
-    logsDiv.scrollTop = logsDiv.scrollHeight;
-
-    // Prevent the default browser error handling
-    return true;
-};
-
 let mediaRecorder, recorderEndTime, recorderChunks = [];
 
 function initializeCamera(video, canvas) {
@@ -50,18 +20,13 @@ function initializeCamera(video, canvas) {
         mediaRecorder.onstop = () => {
             const recordedBlob = new Blob(recorderChunks, { type: 'video/webm' });
             const recordedUrl = URL.createObjectURL(recordedBlob);
+            recorderChunks = [];
         
             // Do something with the recorded video URL, e.g., display it or save it.
             console.log(recordedUrl);
             
-            const downloadLink = document.createElement('a');
-            downloadLink.href = recordedUrl;
-            downloadLink.download = 'recorded-video.webm';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            
-            recorderChunks = [];
+            //downloadToDevice(recordedUrl);
+            //uploadToFirebase(recordedBlob);
         };
         
         const track = stream.getVideoTracks()[0];
@@ -78,6 +43,44 @@ function initializeCamera(video, canvas) {
         console.log("Error: " + err);
     });
 };
+
+function generateFileName() {
+    const now = new Date();
+    const dateString = now.toISOString().slice(0, 10); // Format: YYYY-MM-DD
+    const timeString = now.toTimeString().slice(0, 8); // Format: HH:MM:SS
+    return `${dateString}-${timeString}.webm`;
+}
+
+function downloadToDevice(recordedUrl) {
+    const downloadLink = document.createElement('a');
+    downloadLink.href = recordedUrl;
+    downloadLink.download = generateFileName();
+    document.body.appendChild(downloadLink);
+    // auto download
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+
+function uploadToFirebase(blob) {
+    // Create a storage reference
+    var storageRef = storage.ref('video/' + generateFileName());
+    // Upload Blob
+    var uploadTask = storageRef.put(blob);
+    
+    uploadTask.on('state_changed',
+        function(snapshot){
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+        },
+        function(error) {
+            console.error('Upload failed: ', error);
+        },
+        function() {
+            console.log('Upload successful');
+        }
+    );
+}
+
 
 function computeDifference(rgb1, rgb2) {
     if (rgb1.length !== rgb2.length) {
@@ -116,7 +119,7 @@ const startRecording = (durationMs) => {
         console.log('start');
         mediaRecorder.start();
     };
-    recordingEndTime = Date.now() + durationMs;
+    recorderEndTime = Date.now() + durationMs;
 };
     
 const stopRecording = () => {
@@ -129,14 +132,14 @@ const stopRecording = () => {
 
 const checkRecordingTime = () => {
     const currentTime = Date.now();
-    if (currentTime >= recordingEndTime) {
+    if (currentTime >= recorderEndTime) {
         stopRecording();
     } else {
         requestAnimationFrame(checkRecordingTime);
     }
 };
-
-var previousPixels = null;
+ 
+let previousPixels = null;
 
 window.onload = function() {
     var VIDEO_ID = 'video';
