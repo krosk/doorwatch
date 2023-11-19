@@ -6,6 +6,9 @@
 1.  Paste the confogiration code in index.html
 1.  Enable Cloud Storage for the Firebase app
 
-Links: https://console.firebase.google.com/u/0/project/doorwatch-9ca78/overview
+
+Links: 
+https://console.firebase.google.com/u/0/project/doorwatch-9ca78/overview
+https://console.firebase.google.com/u/0/project/doorwatch-9ca78/storage/doorwatch-9ca78.appspot.com/files/~2Fvideo
 
 # 
