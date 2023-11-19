@@ -148,7 +148,7 @@ let previousPixels = null;
 
 window.onload = function() {
     var VIDEO_ID = 'video';
-    var THRESHOLD = 20;
+    var THRESHOLD = 50;
     
     var DiffTracker = function() {
         DiffTracker.base(this, 'constructor');
@@ -176,7 +176,7 @@ window.onload = function() {
             // No targets were detected in this frame.
             //console.log('No detection');
         } else {
-            startRecording(1000);
+            startRecording(3000);
             checkRecordingTime();
             
             context.clearRect(0, 0, canvas.width, canvas.height);
