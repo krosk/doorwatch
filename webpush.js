@@ -14,7 +14,7 @@ const analytics = getAnalytics(app);
 const messaging = getMessaging(app);
 
 // Request notification permission
-export function requestNotificationPermission() {
+function requestNotificationPermission() {
     Notification.requestPermission().then((permission) => {
         if (permission === 'granted') {
             console.log('Notification permission granted');
@@ -24,5 +24,15 @@ export function requestNotificationPermission() {
         }
     });
 }
+
+function setupFirebaseMessaging() {
+    // Add logic to handle incoming push notifications
+    messaging.onMessage((payload) => {
+        console.log('Message received:', payload);
+        // Add logic to display the notification
+    });
+}
+
+window.requestNotificationPermission = requestNotificationPermission;
 
 console.log('Done');
