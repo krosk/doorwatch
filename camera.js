@@ -21,6 +21,9 @@ function initializeCamera(video, canvas) {
         }
     })
     .then(function (stream) {
+        const videoTrack = stream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(videoTrack);
+        
         video.srcObject = stream;
         video.play();
         
@@ -42,16 +45,6 @@ function initializeCamera(video, canvas) {
             //downloadToDevice(recordedUrl);
             uploadToFirebase(recordedBlob);
         };
-        
-        const track = stream.getVideoTracks()[0];
-        const settings = track.getSettings();
-        
-        const { width, height } = settings;
-        const aspectRatio = width / height;
-        
-        // Adjust canvas size based on camera feed aspect ratio
-        //canvas.width = 100;
-        //canvas.height = 100;
     })
     .catch(function (err) {
         console.log("Error: " + err);
@@ -204,7 +197,7 @@ window.onload = function() {
         }
     });
 
-    tracking.track(VIDEO_ID, tracker);
+    //tracking.track(VIDEO_ID, tracker);
 
     console.log('Done');
 };
