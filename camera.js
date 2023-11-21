@@ -24,6 +24,13 @@ function initializeCamera(video, canvas) {
         const videoTrack = stream.getVideoTracks()[0];
         const imageCapture = new ImageCapture(videoTrack);
         
+        setInterval(function() {
+            imageCapture.grabFrame().then(imageBitmap => {
+                console.log('Snapshot captured:', imageBitmap);
+            })
+            .catch(error => console.error('Error capturing snapshot:', error));
+        }, 1000);
+        
         video.srcObject = stream;
         video.play();
         
