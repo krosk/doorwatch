@@ -14,7 +14,7 @@ const storage = getStorage(app, firebaseConfig.storageBucket);
 
 let mediaRecorder, recorderEndTime, recorderChunks = [];
 
-function initializeCamera(video, canvas) {
+function initializeCamera(video, canvas, context, tracker) {
     navigator.mediaDevices.getUserMedia({
         video: {
             facingMode: { exact: 'environment' } // or 'user' for front-facing camera
@@ -22,17 +22,21 @@ function initializeCamera(video, canvas) {
     })
     .then(function (stream) {
         const videoTrack = stream.getVideoTracks()[0];
-        const imageCapture = new ImageCapture(videoTrack);
+        const imageCapture = new ImageCapture(videoTrack.clone());
         
         setInterval(function() {
+            //console.log(videoTrack.readyState, videoTrack.enabled);
             imageCapture.grabFrame().then(imageBitmap => {
-                console.log('Snapshot captured:', imageBitmap);
+                //console.log('Snapshot captured:', imageBitmap);
+                context.drawImage(imageBitmap, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                tracker.track(imageData.data, canvas.width, canvas.height);
             })
-            .catch(error => console.error('Error capturing snapshot:', error));
-        }, 1000);
+            .catch(error => console.log('Error capturing snapshot:', error));
+        }, 500);
         
-        video.srcObject = stream;
-        video.play();
+        //video.srcObject = stream;
+        //video.play();
         
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = function (event) {
@@ -156,6 +160,7 @@ window.onload = function() {
     tracking.inherits(DiffTracker, tracking.Tracker);
     DiffTracker.prototype.track = function(pixels, width, height) {
         if (previousPixels) {
+            //console.log('Comparing');
             var rgbDiff = computeDifference(previousPixels, pixels);
             var arrMask = computeMask(rgbDiff, THRESHOLD);
             this.emit('track', { data : arrMask });
@@ -167,9 +172,9 @@ window.onload = function() {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     
-    initializeCamera(video, canvas);
-
     var tracker = new DiffTracker();
+    
+    initializeCamera(video, canvas, context, tracker);
 
     tracker.on('track', function (event) {
         if (event.data.length === 0 || event.data[0] == 0) {
@@ -177,6 +182,7 @@ window.onload = function() {
             //console.log('No detection');
             context.clearRect(0, 0, canvas.width, canvas.height);
         } else {
+            //console.log('detect');
             startRecording(3000);
             checkRecordingTime();
             
