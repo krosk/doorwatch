@@ -14,7 +14,7 @@ const storage = getStorage(app, firebaseConfig.storageBucket);
 
 let mediaRecorder, recorderEndTime, recorderChunks = [];
 
-function initializeCamera(video, canvas, context, tracker) {
+function initializeCamera(canvas, context, tracker) {
     navigator.mediaDevices.getUserMedia({
         video: {
             facingMode: { exact: 'environment' } // or 'user' for front-facing camera
@@ -34,9 +34,6 @@ function initializeCamera(video, canvas, context, tracker) {
             })
             .catch(error => console.log('Error capturing snapshot:', error));
         }, 500);
-        
-        //video.srcObject = stream;
-        //video.play();
         
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = function (event) {
@@ -151,7 +148,6 @@ const checkRecordingTime = () => {
 let previousPixels = null;
 
 window.onload = function() {
-    var VIDEO_ID = 'video';
     var THRESHOLD = 50;
     
     var DiffTracker = function() {
@@ -168,13 +164,12 @@ window.onload = function() {
         previousPixels = pixels;
     };
     
-    var video = document.getElementById(VIDEO_ID);
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     
     var tracker = new DiffTracker();
     
-    initializeCamera(video, canvas, context, tracker);
+    initializeCamera(canvas, context, tracker);
 
     tracker.on('track', function (event) {
         if (event.data.length === 0 || event.data[0] == 0) {
@@ -209,8 +204,6 @@ window.onload = function() {
             });
         }
     });
-
-    //tracking.track(VIDEO_ID, tracker);
 
     console.log('Done');
 };
