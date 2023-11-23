@@ -12,6 +12,8 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const storage = getStorage(app, firebaseConfig.storageBucket);
 
+const INTERVAL_MS = 250;
+
 let mediaRecorder, recorderEndTime, recorderChunks = [];
 
 function initializeCamera(canvas, context, tracker) {
@@ -33,7 +35,7 @@ function initializeCamera(canvas, context, tracker) {
                 tracker.track(imageData.data, canvas.width, canvas.height);
             })
             .catch(error => console.log('Error capturing snapshot:', error));
-        }, 500);
+        }, INTERVAL_MS);
         
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = function (event) {
