@@ -10,14 +10,26 @@
             background-color: black;
             color: white;
         }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 1.0;
+        }
     </style>
 </head>
 <body>
-    <button onclick="setBlackScreen()">Hide</button>
+    <button onclick="enterBlackScreen()">Black screen</button>
+    <div id="overlay" onclick="exitBlackScreen()"></div>
     <div class="video-view" style="border: 1px solid #ccc; margin-bottom: 40px;" >
         <canvas id="canvas" width="30" height="40" style="position: absolute;"></canvas>
     </div>
     <div id="logs" style="border: 1px solid #ccc; padding: 10px; max-height: 200px; overflow-y: scroll;"></div>
+    <script type="module" src="overlay.js"></script>
     <script type="module" src="logging.js"></script>
     <script type="module" src="config.js"></script>
     <script type="module" src="camera.js"></script>
