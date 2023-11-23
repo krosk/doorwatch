@@ -207,3 +207,9 @@ window.onload = function() {
 
     console.log('Done');
 };
+
+function setBlackScreen() {
+    document.querySelector("body").requestFullscreen();
+};
+
+window.setBlackScreen = setBlackScreen;
