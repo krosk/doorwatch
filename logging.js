@@ -6,6 +6,16 @@ import { firebaseConfig } from "./config.js";
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
+export function heartbeat() {
+    setInterval(function() {
+        if (window.performance && window.performance.memory) {
+            console.log(Math.round(window.performance.memory.usedJSHeapSize / (1024 * 1024)), "MB");
+        } else {
+            console.log("Memory usage information not available");
+        }
+    }, 5000);
+};
+
 export function logToDiv() {
     var logsDiv = document.getElementById('logs');
     var logEntry = document.createElement('div');
@@ -13,7 +23,7 @@ export function logToDiv() {
     for (var i = 0; i < arguments.length; i++) {
         var message = arguments[i];
         logEntry.textContent += message + ' ';
-        logEntry.textContent += '-';
+        logEntry.textContent += '';
     }
     logsDiv.appendChild(logEntry);
     
@@ -45,3 +55,7 @@ export function logErrorToDiv(message, source, lineno, colno, error) {
 console.log = logToDiv;
 
 window.onerror = logErrorToDiv;
+
+window.heartbeat = heartbeat;
+
+window.heartbeat();
