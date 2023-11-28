@@ -1,4 +1,10 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
 
+import { firebaseConfig } from "./config.js";
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 export function logToDiv() {
     var logsDiv = document.getElementById('logs');
@@ -10,6 +16,10 @@ export function logToDiv() {
         logEntry.textContent += '-';
     }
     logsDiv.appendChild(logEntry);
+    
+    logEvent(analytics, 'log_message', {
+        content: logEntry.textContent
+    });
 
     // Optionally, scroll to the bottom to always show the latest logs
     logsDiv.scrollTop = logsDiv.scrollHeight;
@@ -20,6 +30,10 @@ export function logErrorToDiv(message, source, lineno, colno, error) {
     var logEntry = document.createElement('div');
     logEntry.textContent = 'Error: ' + message + ' at line ' + lineno + ' column ' + colno;
     logsDiv.appendChild(logEntry);
+    
+    logEvent(analytics, 'log_error', {
+        content: logEntry.textContent
+    });
 
     // Optionally, scroll to the bottom to always show the latest logs
     logsDiv.scrollTop = logsDiv.scrollHeight;
