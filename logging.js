@@ -13,7 +13,7 @@ export function heartbeat() {
         } else {
             console.log("Memory usage information not available");
         }
-    }, 1000);
+    }, 60000);
 };
 
 export function logToDiv() {
@@ -27,7 +27,7 @@ export function logToDiv() {
     }
     logsDiv.appendChild(logEntry);
     
-    logEvent(analytics, 'log_message', {
+    logEvent(analytics, 'log', {
         content: logEntry.textContent
     });
 
@@ -41,7 +41,7 @@ export function logErrorToDiv(message, source, lineno, colno, error) {
     logEntry.textContent = 'Error: ' + message + ' at line ' + lineno + ' column ' + colno;
     logsDiv.appendChild(logEntry);
     
-    logEvent(analytics, 'log_error', {
+    logEvent(analytics, 'error', {
         content: logEntry.textContent
     });
 

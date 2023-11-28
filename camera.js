@@ -10,7 +10,7 @@ import { firebaseConfig } from "./config.js";
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app, firebaseConfig.storageBucket);
 
-const INTERVAL_MS = 250;
+const INTERVAL_MS = 333;
 
 let mediaRecorder, recorderEndTime, recorderChunks = [];
 
@@ -32,7 +32,7 @@ function initializeCamera(canvas, context, tracker) {
                 const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
                 tracker.track(imageData.data, canvas.width, canvas.height);
             })
-            .catch(error => console.log('Error capturing snapshot:', error));
+            .catch((error) => console.log('Error capturing snapshot:', error));
         }, INTERVAL_MS);
         
         mediaRecorder = new MediaRecorder(stream);
