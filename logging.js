@@ -9,11 +9,11 @@ const analytics = getAnalytics(app);
 export function heartbeat() {
     setInterval(function() {
         if (window.performance && window.performance.memory) {
-            console.log(Math.round(window.performance.memory.usedJSHeapSize / (1024 * 1024)), "MB");
+            console.log("Memory", Math.round(window.performance.memory.usedJSHeapSize / (1024 * 1024)), "MB");
         } else {
             console.log("Memory usage information not available");
         }
-    }, 5000);
+    }, 1000);
 };
 
 export function logToDiv() {
@@ -57,5 +57,3 @@ console.log = logToDiv;
 window.onerror = logErrorToDiv;
 
 window.heartbeat = heartbeat;
-
-window.heartbeat();
