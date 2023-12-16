@@ -204,8 +204,17 @@ window.onload = function() {
             });
         }
     });
-
-    console.log('Done b');
+    
+    // Get current date and time
+    var currentDate = new Date();
+    
+    // Extract individual components
+    var hours = currentDate.getHours();
+    var minutes = currentDate.getMinutes();
+    var seconds = currentDate.getSeconds();
+    
+    // Display the time
+    console.log('Time: ' + hours + ':' + minutes + ':' + seconds);
     
     var blackScreenButton = document.getElementById('blackscreen');
     blackScreenButton.click();
