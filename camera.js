@@ -205,5 +205,12 @@ window.onload = function() {
         }
     });
 
-    console.log('Done');
+    console.log('Done b');
+    
+    var blackScreenButton = document.getElementById('blackscreen');
+    blackScreenButton.click();
+    
+    setTimeout(function(){
+        location.reload();
+    }, 600000);
 };
