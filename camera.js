@@ -63,7 +63,7 @@ function generateFileName() {
     const now = new Date();
     const dateString = now.toISOString().slice(0, 10); // Format: YYYY-MM-DD
     const timeString = now.toTimeString().slice(0, 8); // Format: HH:MM:SS
-    return `${dateString}-${timeString}.webm`;
+    return `${dateString}/${timeString}.webm`;
 }
 
 function downloadToDevice(recordedUrl) {
