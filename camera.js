@@ -59,11 +59,12 @@ function initializeCamera(canvas, context, tracker) {
     });
 };
 
-function generateFileName() {
+function generateFileName(addon) {
     const now = new Date();
     const dateString = now.toISOString().slice(0, 10); // Format: YYYY-MM-DD
     const timeString = now.toTimeString().slice(0, 8); // Format: HH:MM:SS
-    return `${dateString}/${timeString}.webm`;
+    const addonString = isNaN(addon) ? '0' : String(addon);
+    return `${dateString}/${timeString}-${addonString}.webm`;
 }
 
 function downloadToDevice(recordedUrl) {
@@ -79,11 +80,12 @@ function downloadToDevice(recordedUrl) {
 function uploadToFirebase(blob) {
     console.log('Upload start');
     // Create a storage reference
-    var storageRef = ref(storage, 'video/' + generateFileName());
+    var storageRef = ref(storage, 'video/' + generateFileName(blob.size));
     // Upload Blob
     // 'file' comes from the Blob or File API
     uploadBytes(storageRef, blob).then((snapshot) => {
-        console.log('Uploaded a blob or file!');
+        const blobSize = blob.size;
+        console.log(`Uploaded a blob or file! ${blobSize}`);
     });
 }
 
