@@ -78,7 +78,7 @@ function downloadToDevice(recordedUrl) {
 }
 
 function uploadToFirebase(blob) {
-    if (blob.size < 5000) {
+    if (blob.size < 120000) {
         console.log('Empty video');
         return;
     }
