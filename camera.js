@@ -78,6 +78,10 @@ function downloadToDevice(recordedUrl) {
 }
 
 function uploadToFirebase(blob) {
+    if (blob.size < 5000) {
+        console.log('Empty video');
+        return;
+    }
     console.log('Upload start');
     // Create a storage reference
     var storageRef = ref(storage, 'video/' + generateFileName(blob.size));
