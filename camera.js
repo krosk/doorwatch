@@ -64,7 +64,9 @@ function generateFileName(addon) {
     const dateString = now.toISOString().slice(0, 10); // Format: YYYY-MM-DD
     const timeString = now.toTimeString().slice(0, 8); // Format: HH:MM:SS
     const addonString = isNaN(addon) ? '0' : String(addon);
-    return `${dateString}/${timeString}-${addonString}.webm`;
+    const filename = `${dateString}/${timeString}-${addonString}.webm`;
+    console.log(filename);
+    return filename;
 }
 
 function downloadToDevice(recordedUrl) {
@@ -89,7 +91,7 @@ function uploadToFirebase(blob) {
     // 'file' comes from the Blob or File API
     uploadBytes(storageRef, blob).then((snapshot) => {
         const blobSize = blob.size;
-        console.log(`Uploaded a blob or file! ${blobSize}`);
+        console.log(`Uploaded a blob or file!`);
     });
 }
 
