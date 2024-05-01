@@ -35,24 +35,9 @@ function initializeCamera(canvas, context, tracker) {
             .catch((error) => console.log('Error capturing snapshot:', error));
         }, INTERVAL_MS);
         
-        mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.ondataavailable = function (event) {
-            if (event.data.size > 0) {
-                recorderChunks.push(event.data);
-            }
-        };
-        
-        mediaRecorder.onstop = () => {
-            const recordedBlob = new Blob(recorderChunks, { type: 'video/webm' });
-            const recordedUrl = URL.createObjectURL(recordedBlob);
-            recorderChunks = [];
-        
-            // Do something with the recorded video URL, e.g., display it or save it.
-            console.log(recordedUrl);
-            
-            //downloadToDevice(recordedUrl);
-            uploadToFirebase(recordedBlob);
-        };
+        mediaRecorder = RecordRTC(stream, {
+            type: 'video'
+        });
     })
     .catch(function (err) {
         console.log("Error: " + err);
@@ -132,7 +117,7 @@ function computeMask(rgb, threshold) {
 const startRecording = (durationMs) => {
     if (mediaRecorder && mediaRecorder.state != 'recording') {
         console.log('start');
-        mediaRecorder.start();
+        mediaRecorder.startRecording();
     };
     // set, or extend the recorder end time
     recorderEndTime = Date.now() + durationMs;
@@ -141,8 +126,17 @@ const startRecording = (durationMs) => {
 const stopRecording = () => {
     if (mediaRecorder && mediaRecorder.state == 'recording') {
         console.log('stop');
-        mediaRecorder.stop();
-        //stream.getTracks().forEach(track => track.stop());
+        mediaRecorder.stopRecording(function() {
+            const recordedBlob = recorder.getBlob();
+            const recordedUrl = URL.createObjectURL(recordedBlob);
+            recorderChunks = [];
+        
+            // Do something with the recorded video URL, e.g., display it or save it.
+            console.log(recordedUrl);
+            
+            //downloadToDevice(recordedUrl);
+            uploadToFirebase(recordedBlob);
+        });
     };
 };
 
