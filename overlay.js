@@ -12,7 +12,7 @@ function enterBlackScreen() {
     } else {
         console.log('not found?');
     }
-    document.getElementById("overlay").style.display = 'block';
+    document.getElementById("overlay").style.display = 'none';
 };
 
 function exitBlackScreen() {

@@ -227,7 +227,7 @@ window.onload = function() {
     console.log('Time: ' + hours + ':' + minutes + ':' + seconds);
     
     var blackScreenButton = document.getElementById('blackscreen');
-    //blackScreenButton.click();
+    blackScreenButton.click();
     
     setTimeout(function(){
         location.reload();
