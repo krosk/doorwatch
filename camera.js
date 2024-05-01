@@ -80,8 +80,8 @@ function downloadToDevice(recordedUrl) {
 }
 
 function uploadToFirebase(blob) {
-    if (blob.size < 120000) {
-        console.log('Empty video');
+    if (blob.size < 170000) {
+        console.log('Empty video, skipping');
         return;
     }
     console.log('Upload start');
@@ -128,11 +128,13 @@ function computeMask(rgb, threshold) {
     return [count, [arr]];
 }
 
+// called every time there is a detection event
 const startRecording = (durationMs) => {
     if (mediaRecorder && mediaRecorder.state != 'recording') {
         console.log('start');
         mediaRecorder.start();
     };
+    // set, or extend the recorder end time
     recorderEndTime = Date.now() + durationMs;
 };
     
