@@ -36,7 +36,8 @@ function initializeCamera(canvas, context, tracker) {
         }, INTERVAL_MS);
         
         mediaRecorder = RecordRTC(stream, {
-            type: 'video'
+            type: 'video',
+            mimeType: 'video/webm',
         });
     })
     .catch(function (err) {
@@ -127,7 +128,7 @@ const stopRecording = () => {
     if (mediaRecorder && mediaRecorder.state == 'recording') {
         console.log('stop');
         mediaRecorder.stopRecording(function() {
-            const recordedBlob = recorder.getBlob();
+            const recordedBlob = mediaRecorder.getBlob();
             const recordedUrl = URL.createObjectURL(recordedBlob);
             recorderChunks = [];
         
